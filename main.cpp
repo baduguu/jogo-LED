@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <stdlib.h>
 #include <iostream>
+#include <string>
 
 int main() {
     //Tamanho do Cano
@@ -103,7 +104,6 @@ int main() {
                         jump = true;
                         jumpCount = 25;
                         spriteCount = 3;
-                        
                         birdRect.left = birdWidth*spriteCount;
                         birdSprite.setTextureRect(birdRect);
 
@@ -150,7 +150,7 @@ int main() {
                 birdRect.left = birdWidth;
                 birdRect.top = birdHeight;
                 birdSprite.setTextureRect(birdRect);
-                std::cout << "Vocẽ fez " << points << " pontos." << std::endl;
+                std::cout << "Você fez " << points << " pontos." << std::endl;
             }
 
             //Marcar Pontos
