@@ -10,7 +10,7 @@ int main() {
     const int birdWidth = 176, birdHeight = 162;
     const int birdRadius = 20;
     //Tamanho da Janela
-    const int windowWidth = 1600, windowHeight = 900;
+    const int windowWidth = 900, windowHeight = 900;
     sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Flappy Bird");
     //Limite de Frames
     window.setFramerateLimit(60);
@@ -66,6 +66,17 @@ int main() {
     roof.setSize(sf::Vector2f(windowWidth, 1));
     roof.setPosition(0,0);
 
+    //Fonte
+    sf::Font font;
+    font.loadFromFile("assets/pixelart.ttf");
+
+    sf::Text text;
+    text.setFont(font);
+    text.setCharacterSize(80);
+    text.setFillColor(sf::Color::White);
+    text.setPosition(windowWidth/2, 30);
+    text.setString("0");
+
     bool gameRunning = false, jump = false, spriteLimiter = false, pointGotten = false;
     int y = windowHeight/2, jumpCount = 0, rotation = 0, spriteCount = 0, pipex = windowWidth, pipesheight = windowHeight/2, points = 0;
     float pipeTime = 10.2, pipeSpeed = 5;
@@ -91,6 +102,7 @@ int main() {
                         gameRunning = true;
                         pipeSpeed = 5;
                         points = 0;
+                        text.setString("0");
                         y = windowHeight/2;
                         rotation = 0;
                         pipex = windowWidth;
@@ -150,7 +162,6 @@ int main() {
                 birdRect.left = birdWidth;
                 birdRect.top = birdHeight;
                 birdSprite.setTextureRect(birdRect);
-                std::cout << "Você fez " << points << " pontos." << std::endl;
             }
 
             //Marcar Pontos
@@ -160,6 +171,7 @@ int main() {
                 && pointGotten == false)
             {
                 points++;
+                text.setString(std::to_string(points));
                 pipeSpeed += 1;
                 pointGotten = true;
             }
@@ -186,6 +198,7 @@ int main() {
         window.draw(pipeUpSprite);
         window.draw(groundSprite);
         window.draw(birdSprite);
+        window.draw(text);
         window.display();
     }
     return 0;
