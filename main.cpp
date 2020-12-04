@@ -66,18 +66,31 @@ int main() {
     roof.setSize(sf::Vector2f(windowWidth, 1));
     roof.setPosition(0,0);
 
-    //Fonte
+    //Textos
     sf::Font font;
     font.loadFromFile("assets/pixelart.ttf");
 
-    sf::Text text;
-    text.setFont(font);
-    text.setCharacterSize(80);
-    text.setFillColor(sf::Color::White);
-    text.setPosition(windowWidth/2, 30);
-    text.setString("0");
+    sf::Text pointstext;
+    pointstext.setFont(font);
+    pointstext.setCharacterSize(80);
+    pointstext.setFillColor(sf::Color::White);
+    pointstext.setPosition(windowWidth/2-20, 30);
 
-    bool gameRunning = false, jump = false, spriteLimiter = false, pointGotten = false;
+
+    //Menu de game over
+    sf::Texture gameoverTexture;
+    gameoverTexture.loadFromFile("assets/gameover2.png");
+    sf::Sprite gameoverSprite(gameoverTexture);
+    gameoverSprite.setPosition(windowWidth/4, 130);
+
+
+    //Menu inicial
+    sf::Texture menuTexture;
+    menuTexture.loadFromFile("assets/title.png");
+    sf::Sprite mainmenuSprite(menuTexture);
+    mainmenuSprite.setPosition(200, 50);
+
+    bool gameRunning = false, initialMenu = true, gameOver = false, jump = false, spriteLimiter = false, pointGotten = false;
     int y = windowHeight/2, jumpCount = 0, rotation = 0, spriteCount = 0, pipex = windowWidth, pipesheight = windowHeight/2, points = 0;
     float pipeTime = 10.2, pipeSpeed = 5;
     
@@ -97,12 +110,14 @@ int main() {
                 }
                 //Evento do Pulo/Começo do jogo
                 else if (event.key.code == sf::Keyboard::Space){
-                    if (!gameRunning) 
+                    if (!gameRunning && !gameOver) 
                     {
                         gameRunning = true;
+                        gameOver = false;
+                        initialMenu = false;
                         pipeSpeed = 5;
                         points = 0;
-                        text.setString("0");
+                        pointstext.setString("0");
                         y = windowHeight/2;
                         rotation = 0;
                         pipex = windowWidth;
@@ -112,6 +127,20 @@ int main() {
                         birdRect.top = 0;
                         birdSprite.setTextureRect(birdRect);
                     }
+                    else if (gameOver) {
+                        initialMenu = true;
+                        gameOver = false;
+                        y = windowHeight/2;
+                        rotation = 0;
+                        pipex = windowWidth;
+                        pipeDownSprite.setPosition(pipex, pipesheight);
+                        pipeUpSprite.setPosition(pipex, pipesheight-pipeHeight-350);
+                        birdRect.left = birdWidth;
+                        birdRect.top = 0;
+                        birdSprite.setTextureRect(birdRect);
+                        pointstext.setString("");
+                    }
+
                     else if(jumpCount < 10){
                         jump = true;
                         jumpCount = 25;
@@ -123,11 +152,13 @@ int main() {
                 }
             }
         }
-        //Atualização de Estados do Jogo
-        bgRect.left = bgRect.left +4;
-        bgSprite.setTextureRect(bgRect);
 
         //Jogo Rodando
+        if(gameRunning || initialMenu) {
+            bgRect.left = bgRect.left +1;
+            bgSprite.setTextureRect(bgRect);
+        }
+
         if(gameRunning){
             y = y + 10;
             if(rotation < 90) rotation = rotation + 1.5;
@@ -159,6 +190,7 @@ int main() {
                 || shape.getGlobalBounds().intersects(groundSprite.getGlobalBounds()))
             {
                 gameRunning = false;
+                gameOver = true;
                 birdRect.left = birdWidth;
                 birdRect.top = birdHeight;
                 birdSprite.setTextureRect(birdRect);
@@ -171,7 +203,7 @@ int main() {
                 && pointGotten == false)
             {
                 points++;
-                text.setString(std::to_string(points));
+                pointstext.setString(std::to_string(points));
                 pipeSpeed += 1;
                 pointGotten = true;
             }
@@ -198,7 +230,13 @@ int main() {
         window.draw(pipeUpSprite);
         window.draw(groundSprite);
         window.draw(birdSprite);
-        window.draw(text);
+        window.draw(pointstext);
+        if (gameOver) {
+            window.draw(gameoverSprite);
+        }
+        if (initialMenu) {
+            window.draw(mainmenuSprite);
+        }
         window.display();
     }
     return 0;
