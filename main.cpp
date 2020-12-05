@@ -68,14 +68,30 @@ int main() {
 
     //Textos
     sf::Font font;
-    font.loadFromFile("assets/pixelart.ttf");
+    font.loadFromFile("assets/fontt.ttf");
+   
+        //Pontos
+        sf::Text pointstext;
+        pointstext.setFont(font);
+        pointstext.setCharacterSize(45);
+        pointstext.setFillColor(sf::Color::White);
+        pointstext.setPosition(windowWidth/2, 50);
 
-    sf::Text pointstext;
-    pointstext.setFont(font);
-    pointstext.setCharacterSize(80);
-    pointstext.setFillColor(sf::Color::White);
-    pointstext.setPosition(windowWidth/2-20, 30);
+        //Nickname input
+        sf::String playerInput;
+        sf::Text playerText;
+        playerText.setFont(font);
+        playerText.setCharacterSize(25);
+        playerText.setFillColor(sf::Color(150, 150, 150));
+        playerText.setPosition(windowWidth/2-170, 255);
 
+        //Nickname string
+        sf::Text nicktext;
+        nicktext.setFont(font);
+        nicktext.setCharacterSize(30);
+        nicktext.setFillColor(sf::Color::Black);
+        nicktext.setPosition(windowWidth/2-400, 250);
+        nicktext.setString("NICKNAME: ");
 
     //Menu de game over
     sf::Texture gameoverTexture;
@@ -89,6 +105,7 @@ int main() {
     menuTexture.loadFromFile("assets/title.png");
     sf::Sprite mainmenuSprite(menuTexture);
     mainmenuSprite.setPosition(200, 50);
+
 
     bool gameRunning = false, initialMenu = true, gameOver = false, jump = false, spriteLimiter = false, pointGotten = false;
     int y = windowHeight/2, jumpCount = 0, rotation = 0, spriteCount = 0, pipex = windowWidth, pipesheight = windowHeight/2, points = 0;
@@ -104,19 +121,28 @@ int main() {
             //Fechar Janela
             if (event.type == sf::Event::Closed)
                 window.close();
+
+            else if (event.type == sf::Event::TextEntered) {
+                if (playerInput.getSize() < 10) {
+                    playerInput.replace(sf::String(" "), sf::String(""));
+                    playerInput +=event.text.unicode;
+                    playerText.setString(playerInput);
+                }
+            }
+
             else if (event.type == sf::Event::KeyPressed){
                 if(event.key.code == sf::Keyboard::Escape){
                     window.close();
                 }
+
                 //Evento do Pulo/Começo do jogo
                 else if (event.key.code == sf::Keyboard::Space){
-                    if (!gameRunning && !gameOver) 
-                    {
+                    if (!gameRunning && !gameOver && playerInput.getSize() > 2) {
+                        playerInput.clear();
                         gameRunning = true;
                         gameOver = false;
                         initialMenu = false;
                         pipeSpeed = 5;
-                        points = 0;
                         pointstext.setString("0");
                         y = windowHeight/2;
                         rotation = 0;
@@ -128,15 +154,19 @@ int main() {
                         birdSprite.setTextureRect(birdRect);
                     }
                     else if (gameOver) {
+                        playerInput.clear();
                         initialMenu = true;
                         gameOver = false;
                         y = windowHeight/2;
                         rotation = 0;
+                        spriteCount = 0;
+                        jumpCount = 0;
+                        points = 0;
                         pipex = windowWidth;
                         pipeDownSprite.setPosition(pipex, pipesheight);
                         pipeUpSprite.setPosition(pipex, pipesheight-pipeHeight-350);
-                        birdRect.left = birdWidth;
-                        birdRect.top = 0;
+                        birdRect = {0,0, birdWidth, birdHeight};
+                        birdSprite.setPosition(windowWidth/2, windowHeight/2);
                         birdSprite.setTextureRect(birdRect);
                         pointstext.setString("");
                     }
@@ -236,6 +266,8 @@ int main() {
         }
         if (initialMenu) {
             window.draw(mainmenuSprite);
+            window.draw(playerText);
+            window.draw(nicktext);
         }
         window.display();
     }
