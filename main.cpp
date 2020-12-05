@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <algorithm>
 #include <vector>
+#include <ctime>
 using namespace std;
 
     
@@ -14,6 +15,7 @@ using namespace std;
             struct score {
                 string nome;
                 int pontos;
+                string hora;
             };
             score pontuacoes;
 
@@ -40,6 +42,8 @@ int main() {
 
     while (entrada >> pontuacoes.nome) {
         entrada >> pontuacoes.pontos;
+        entrada.ignore();
+        getline(entrada, pontuacoes.hora);
         highscores.push_back(pontuacoes);
     }
     entrada.close();            
@@ -164,7 +168,7 @@ int main() {
         bool gameRunning = false, initialMenu = true, gameOver = false, jump = false, spriteLimiter = false, pointGotten = false;
         int y = windowHeight/2, jumpCount = 0, rotation = 0, spriteCount = 0, pipex = windowWidth, pipesheight = windowHeight/2, points = 0;
         float pipeTime = 10.2, pipeSpeed = 5;        
-        string nickname;
+        string nickname, hour;
 
 
 
@@ -206,6 +210,9 @@ int main() {
 
                             //Iniciar jogo
                             if (!gameRunning && !gameOver && playerInput.getSize() > 2) {
+                                time_t result = time(nullptr);
+                                hour = asctime(localtime(&result));
+                                pontuacoes.hora = hour;
                                 pontuacoes.nome = nickname;
                                 playerInput.clear();
                                 gameRunning = true;
@@ -351,8 +358,12 @@ int main() {
         window.display();
     }
 
-                                        //Salvando pontuação num arquivo txt
-    sort(highscores.begin(), highscores.end(), cmp);
+
+
+
+
+        //Salvando pontuações num arquivo txt
+        sort(highscores.begin(), highscores.end(), cmp);
 
         ofstream saida;
         saida.open("highscores.txt");
@@ -363,7 +374,7 @@ int main() {
         }
 
         for (auto h : highscores){
-            saida << h.nome << " " << h.pontos << endl;
+            saida << h.nome << " " << h.pontos << " " << h.hora << endl;
         }
         saida.close();
 
