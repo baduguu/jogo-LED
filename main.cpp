@@ -30,24 +30,6 @@ int main() {
             //Vetor para salvar os dados da estrutura
             vector <score> highscores;
 
-    //Ler partidas anteriores
-    ifstream entrada;
-    entrada.open("highscores.txt");
-
-    if (entrada) {
-        while (entrada >> pontuacoes.nome) {
-            entrada >> pontuacoes.pontos;
-            entrada.ignore();
-            getline(entrada, pontuacoes.hora);
-            highscores.push_back(pontuacoes);
-        }
-        entrada.close();  
-    }
-    highscores.push_back(pontuacoes);
-    salvarnome = pontuacoes.nome;
-    salvarhora = pontuacoes.hora;
-    salvarpontos = pontuacoes.pontos;
-
     //Tamanhos
             //Tamanho do Cano
             const int pipeWidth = 104, pipeHeight = 640;
@@ -129,6 +111,37 @@ int main() {
             pointstext.setFillColor(sf::Color::White);
             pointstext.setPosition(windowWidth/2, 50);
 
+            //Exibircolocações
+            sf::Text firsttext;
+            firsttext.setFont(font);
+            firsttext.setCharacterSize(15);
+            firsttext.setFillColor(sf::Color::Black);
+            firsttext.setPosition(windowWidth/2, 450);
+
+            sf::Text secondtext;
+            secondtext.setFont(font);
+            secondtext.setCharacterSize(15);
+            secondtext.setFillColor(sf::Color::Black);
+            secondtext.setPosition(windowWidth/2, 480);
+
+            sf::Text thirdtext;
+            thirdtext.setFont(font);
+            thirdtext.setCharacterSize(15);
+            thirdtext.setFillColor(sf::Color::Black);
+            thirdtext.setPosition(windowWidth/2, 510);
+
+            sf::Text fourthtext;
+            fourthtext.setFont(font);
+            fourthtext.setCharacterSize(15);
+            fourthtext.setFillColor(sf::Color::Black);
+            fourthtext.setPosition(windowWidth/2, 540);
+
+            sf::Text fifthtext;
+            fifthtext.setFont(font);
+            fifthtext.setCharacterSize(15);
+            fifthtext.setFillColor(sf::Color::Black);
+            fifthtext.setPosition(windowWidth/2, 570);
+
             //Nickname input
             sf::String playerInput;
             sf::Text playerText;
@@ -164,10 +177,10 @@ int main() {
 
 
     //Variaveis úteis para o game
-    bool gameRunning = false, initialMenu = true, gameOver = false, jump = false, spriteLimiter = false, pointGotten = false;
+    bool jaLeu = false, gameRunning = false, initialMenu = true, gameOver = false, jump = false, spriteLimiter = false, pointGotten = false;
     int y = windowHeight/2, jumpCount = 0, rotation = 0, spriteCount = 0, pipex = windowWidth, pipesheight = windowHeight/2, points = 0;
     float pipeTime = 10.2, pipeSpeed = 5;        
-    string nickname, hour;
+    string nickname, hour, primeiro, segundo, terceiro, quarto, quinto;
 
 
                                         //Game Loop
@@ -206,6 +219,36 @@ int main() {
 
                             //Iniciar jogo
                             if (!gameRunning && !gameOver && playerInput.getSize() > 2) {
+    //Ler partidas anteriores
+    if (!jaLeu) {
+        jaLeu = true;
+        ifstream entrada;
+        entrada.open("highscores.txt");
+
+        if (entrada) {
+            while (entrada >> pontuacoes.nome) {
+                entrada >> pontuacoes.pontos;
+                entrada.ignore();
+                getline(entrada, pontuacoes.hora);
+                if (pontuacoes.pontos > 0) {
+                    highscores.push_back(pontuacoes);
+                }
+            }
+            entrada.close();
+
+            salvarnome = pontuacoes.nome;
+            salvarhora = pontuacoes.hora;
+            salvarpontos = pontuacoes.pontos;
+            ofstream saida;
+            saida.open("highscores.txt");
+            for (auto h : highscores){
+                saida << h.nome << " " << h.pontos << " " << h.hora << endl;
+            }
+            saida.close();
+        }
+    }
+
+
                                 time_t result = time(nullptr);
                                 hour = asctime(localtime(&result));
                                 pontuacoes.hora = hour;
@@ -226,13 +269,67 @@ int main() {
                                 birdSprite.setTextureRect(birdRect);
                             }
 
+
+
+
+
+
                             //Iniciar menu de gameover
-                            else if (gameOver) {
-                                if (salvarpontos < points) {
-                                pontuacoes.pontos = points;
-                                highscores.pop_back();
-                                highscores.push_back(pontuacoes);
-                                }
+                            else if (gameOver) {                                
+
+    //Salvar novas pontuaçoes
+    if (salvarpontos < points) {
+        pontuacoes.pontos = points;
+        highscores.pop_back();
+        highscores.push_back(pontuacoes);
+        sort(highscores.begin(), highscores.end(), cmp);
+        ofstream saida;
+        saida.open("highscores.txt");
+        for (auto h : highscores){
+            saida << h.nome << " " << h.pontos << " " << h.hora << endl;
+        }
+        saida.close();
+
+        ifstream entrada;
+        entrada.open("highscores.txt");
+
+        if (entrada) {
+            highscores.clear();
+            while (entrada >> pontuacoes.nome) {
+                entrada >> pontuacoes.pontos;
+                entrada.ignore();
+                getline(entrada, pontuacoes.hora);
+                if (pontuacoes.pontos > 0) {
+                    highscores.push_back(pontuacoes);
+                }
+            }
+            entrada.close();
+
+            ofstream saidaf;
+            saidaf.open("highscores.txt");
+            for (auto h : highscores){
+                saidaf << h.nome << " " << h.pontos << " " << h.hora << endl;
+            }
+            saidaf.close();
+        }
+    }
+
+
+    //Ler Leaderboard
+    ifstream entradalead;
+    entradalead.open("highscores.txt");
+
+    getline(entradalead, primeiro);
+    getline(entradalead, segundo);
+    getline(entradalead, terceiro);
+    getline(entradalead, quarto);
+    getline(entradalead, quinto);
+
+    firsttext.setString("1. " + primeiro);
+    secondtext.setString("2. " + segundo);
+    thirdtext.setString("3. " + terceiro);
+    fourthtext.setString("4. " + quarto);
+    fifthtext.setString("5. " + quinto);    
                                 playerInput.clear();
                                 initialMenu = true;
                                 gameOver = false;
@@ -248,16 +345,6 @@ int main() {
                                 birdSprite.setPosition(windowWidth/2, windowHeight/2);
                                 birdSprite.setTextureRect(birdRect);
                                 pointstext.setString("");
-
-                                //Salvar pontuações num arquivo txt
-                                sort(highscores.begin(), highscores.end(), cmp);
-                                    //Salvar novas pontuaçoes
-                                    ofstream saida;
-                                    saida.open("highscores.txt");
-                                    for (auto h : highscores){
-                                        saida << h.nome << " " << h.pontos << " " << h.hora << endl;
-                                    }
-                                    saida.close();
                                 }
 
                             //Pular com o pássaro
@@ -358,6 +445,11 @@ int main() {
         window.draw(pointstext);
         if (gameOver) {
             window.draw(gameoverSprite);
+            window.draw(firsttext);
+            window.draw(secondtext);
+            window.draw(thirdtext);
+            window.draw(fourthtext);
+            window.draw(fifthtext);
         }
         if (initialMenu) {
             window.draw(mainmenuSprite);
