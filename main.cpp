@@ -111,6 +111,14 @@ int main() {
             pointstext.setFillColor(sf::Color::White);
             pointstext.setPosition(windowWidth/2, 50);
 
+            //Leaderboard
+            sf::Text leaderboardtext;
+            leaderboardtext.setFont(font);
+            leaderboardtext.setCharacterSize(45);
+            leaderboardtext.setFillColor(sf::Color::White);
+            leaderboardtext.setPosition((windowWidth/2)-25, 350);
+            leaderboardtext.setString("LEADERBOARD");
+
             //Exibircolocações
             sf::Text firsttext;
             firsttext.setFont(font);
@@ -147,7 +155,7 @@ int main() {
             sf::Text playerText;
             playerText.setFont(font);
             playerText.setCharacterSize(25);
-            playerText.setFillColor(sf::Color(150, 150, 150));
+            playerText.setFillColor(sf::Color::White);
             playerText.setPosition(windowWidth/2-170, 255);
 
             //Nickname string
@@ -219,35 +227,34 @@ int main() {
 
                             //Iniciar jogo
                             if (!gameRunning && !gameOver && playerInput.getSize() > 2) {
-    //Ler partidas anteriores
-    if (!jaLeu) {
-        jaLeu = true;
-        ifstream entrada;
-        entrada.open("highscores.txt");
+                                //Ler partidas anteriores
+                                if (!jaLeu) {
+                                    jaLeu = true;
+                                    ifstream entrada;
+                                    entrada.open("highscores.txt");
 
-        if (entrada) {
-            while (entrada >> pontuacoes.nome) {
-                entrada >> pontuacoes.pontos;
-                entrada.ignore();
-                getline(entrada, pontuacoes.hora);
-                if (pontuacoes.pontos > 0) {
-                    highscores.push_back(pontuacoes);
-                }
-            }
-            entrada.close();
+                                    if (entrada) {
+                                        while (entrada >> pontuacoes.nome) {
+                                            entrada >> pontuacoes.pontos;
+                                            entrada.ignore();
+                                            getline(entrada, pontuacoes.hora);
+                                            if (pontuacoes.pontos > 0) {
+                                                highscores.push_back(pontuacoes);
+                                            }
+                                        }
+                                        entrada.close();
 
-            salvarnome = pontuacoes.nome;
-            salvarhora = pontuacoes.hora;
-            salvarpontos = pontuacoes.pontos;
-            ofstream saida;
-            saida.open("highscores.txt");
-            for (auto h : highscores){
-                saida << h.nome << " " << h.pontos << " " << h.hora << endl;
-            }
-            saida.close();
-        }
-    }
-
+                                        salvarnome = pontuacoes.nome;
+                                        salvarhora = pontuacoes.hora;
+                                        salvarpontos = pontuacoes.pontos;
+                                        ofstream saida;
+                                        saida.open("highscores.txt");
+                                        for (auto h : highscores){
+                                            saida << h.nome << " " << h.pontos << " " << h.hora << endl;
+                                        }
+                                        saida.close();
+                                    }
+                                }
 
                                 time_t result = time(nullptr);
                                 hour = asctime(localtime(&result));
@@ -270,66 +277,62 @@ int main() {
                             }
 
 
-
-
-
-
                             //Iniciar menu de gameover
                             else if (gameOver) {                                
+                                //Salvar novas pontuaçoes
+                                if (salvarpontos < points) {
+                                    pontuacoes.pontos = points;
+                                    highscores.pop_back();
+                                    highscores.push_back(pontuacoes);
+                                    sort(highscores.begin(), highscores.end(), cmp);
+                                    ofstream saida;
+                                    saida.open("highscores.txt");
+                                    for (auto h : highscores){
+                                        saida << h.nome << " " << h.pontos << " " << h.hora << endl;
+                                    }
+                                    saida.close();
 
-    //Salvar novas pontuaçoes
-    if (salvarpontos < points) {
-        pontuacoes.pontos = points;
-        highscores.pop_back();
-        highscores.push_back(pontuacoes);
-        sort(highscores.begin(), highscores.end(), cmp);
-        ofstream saida;
-        saida.open("highscores.txt");
-        for (auto h : highscores){
-            saida << h.nome << " " << h.pontos << " " << h.hora << endl;
-        }
-        saida.close();
+                                    ifstream entrada;
+                                    entrada.open("highscores.txt");
 
-        ifstream entrada;
-        entrada.open("highscores.txt");
+                                    if (entrada) {
+                                        highscores.clear();
+                                        while (entrada >> pontuacoes.nome) {
+                                            entrada >> pontuacoes.pontos;
+                                            entrada.ignore();
+                                            getline(entrada, pontuacoes.hora);
+                                            if (pontuacoes.pontos > 0) {
+                                                highscores.push_back(pontuacoes);
+                                            }
+                                        }
+                                        entrada.close();
 
-        if (entrada) {
-            highscores.clear();
-            while (entrada >> pontuacoes.nome) {
-                entrada >> pontuacoes.pontos;
-                entrada.ignore();
-                getline(entrada, pontuacoes.hora);
-                if (pontuacoes.pontos > 0) {
-                    highscores.push_back(pontuacoes);
-                }
-            }
-            entrada.close();
-
-            ofstream saidaf;
-            saidaf.open("highscores.txt");
-            for (auto h : highscores){
-                saidaf << h.nome << " " << h.pontos << " " << h.hora << endl;
-            }
-            saidaf.close();
-        }
-    }
+                                        ofstream saidaf;
+                                        saidaf.open("highscores.txt");
+                                        for (auto h : highscores){
+                                            saidaf << h.nome << " " << h.pontos << " " << h.hora << endl;
+                                        }
+                                        saidaf.close();
+                                    }
+                                }
 
 
-    //Ler Leaderboard
-    ifstream entradalead;
-    entradalead.open("highscores.txt");
+                                //Ler Leaderboard
+                                ifstream entradalead;
+                                entradalead.open("highscores.txt");
 
-    getline(entradalead, primeiro);
-    getline(entradalead, segundo);
-    getline(entradalead, terceiro);
-    getline(entradalead, quarto);
-    getline(entradalead, quinto);
+                                getline(entradalead, primeiro);
+                                getline(entradalead, segundo);
+                                getline(entradalead, terceiro);
+                                getline(entradalead, quarto);
+                                getline(entradalead, quinto);
 
-    firsttext.setString("1. " + primeiro);
-    secondtext.setString("2. " + segundo);
-    thirdtext.setString("3. " + terceiro);
-    fourthtext.setString("4. " + quarto);
-    fifthtext.setString("5. " + quinto);    
+                                firsttext.setString("1. " + primeiro);
+                                secondtext.setString("2. " + segundo);
+                                thirdtext.setString("3. " + terceiro);
+                                fourthtext.setString("4. " + quarto);
+                                fifthtext.setString("5. " + quinto);    
+                            
                                 playerInput.clear();
                                 initialMenu = true;
                                 gameOver = false;
@@ -345,7 +348,7 @@ int main() {
                                 birdSprite.setPosition(windowWidth/2, windowHeight/2);
                                 birdSprite.setTextureRect(birdRect);
                                 pointstext.setString("");
-                                }
+                            }
 
                             //Pular com o pássaro
                             else if(jumpCount < 10){
@@ -450,6 +453,7 @@ int main() {
             window.draw(thirdtext);
             window.draw(fourthtext);
             window.draw(fifthtext);
+            window.draw(leaderboardtext);
         }
         if (initialMenu) {
             window.draw(mainmenuSprite);
