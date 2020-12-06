@@ -116,7 +116,7 @@ int main() {
             leaderboardtext.setFont(font);
             leaderboardtext.setCharacterSize(45);
             leaderboardtext.setFillColor(sf::Color::White);
-            leaderboardtext.setPosition((windowWidth/2)-25, 350);
+            leaderboardtext.setPosition((windowWidth/2)-(200), 350);
             leaderboardtext.setString("LEADERBOARD");
 
             //Exibircolocações
@@ -124,31 +124,31 @@ int main() {
             firsttext.setFont(font);
             firsttext.setCharacterSize(15);
             firsttext.setFillColor(sf::Color::Black);
-            firsttext.setPosition(windowWidth/2, 450);
+            firsttext.setPosition(windowWidth/2-(180), 450);
 
             sf::Text secondtext;
             secondtext.setFont(font);
             secondtext.setCharacterSize(15);
             secondtext.setFillColor(sf::Color::Black);
-            secondtext.setPosition(windowWidth/2, 480);
+            secondtext.setPosition(windowWidth/2-(180), 480);
 
             sf::Text thirdtext;
             thirdtext.setFont(font);
             thirdtext.setCharacterSize(15);
             thirdtext.setFillColor(sf::Color::Black);
-            thirdtext.setPosition(windowWidth/2, 510);
+            thirdtext.setPosition(windowWidth/2-(180), 510);
 
             sf::Text fourthtext;
             fourthtext.setFont(font);
             fourthtext.setCharacterSize(15);
             fourthtext.setFillColor(sf::Color::Black);
-            fourthtext.setPosition(windowWidth/2, 540);
+            fourthtext.setPosition(windowWidth/2-(180), 540);
 
             sf::Text fifthtext;
             fifthtext.setFont(font);
             fifthtext.setCharacterSize(15);
             fifthtext.setFillColor(sf::Color::Black);
-            fifthtext.setPosition(windowWidth/2, 570);
+            fifthtext.setPosition(windowWidth/2-(180), 570);
 
             //Nickname input
             sf::String playerInput;
@@ -278,7 +278,7 @@ int main() {
 
 
                             //Iniciar menu de gameover
-                            else if (gameOver) {                                
+                            if (gameOver) {                                
                                 //Salvar novas pontuaçoes
                                 if (salvarpontos < points) {
                                     pontuacoes.pontos = points;
@@ -406,6 +406,23 @@ int main() {
                                 birdRect.left = birdWidth;
                                 birdRect.top = birdHeight;
                                 birdSprite.setTextureRect(birdRect);
+                                
+                                ifstream entradalead;
+                                entradalead.open("highscores.txt");
+
+                                getline(entradalead, primeiro);
+                                getline(entradalead, segundo);
+                                getline(entradalead, terceiro);
+                                getline(entradalead, quarto);
+                                getline(entradalead, quinto);
+
+                                firsttext.setString("1. " + primeiro);
+                                secondtext.setString("2. " + segundo);
+                                thirdtext.setString("3. " + terceiro);
+                                fourthtext.setString("4. " + quarto);
+                                fifthtext.setString("5. " + quinto);    
+                            
+                                playerInput.clear();
                             }
 
                     //Marcar Pontos
@@ -459,6 +476,7 @@ int main() {
             window.draw(mainmenuSprite);
             window.draw(playerText);
             window.draw(nicktext);
+            pointGotten = false;
         }
         window.display();
     }
