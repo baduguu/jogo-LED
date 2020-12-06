@@ -23,10 +23,30 @@ using namespace std;
                 return s1.pontos > s2.pontos || (s1.pontos == s2.pontos && s1.nome < s2.nome);
             }
 
+            string salvarnome, salvarhora;
+            int salvarpontos;
 
 int main() {
             //Vetor para salvar os dados da estrutura
             vector <score> highscores;
+
+    //Ler partidas anteriores
+    ifstream entrada;
+    entrada.open("highscores.txt");
+
+    if (entrada) {
+        while (entrada >> pontuacoes.nome) {
+            entrada >> pontuacoes.pontos;
+            entrada.ignore();
+            getline(entrada, pontuacoes.hora);
+            highscores.push_back(pontuacoes);
+        }
+        entrada.close();  
+    }
+    highscores.push_back(pontuacoes);
+    salvarnome = pontuacoes.nome;
+    salvarhora = pontuacoes.hora;
+    salvarpontos = pontuacoes.pontos;
 
     //Tamanhos
             //Tamanho do Cano
@@ -149,19 +169,7 @@ int main() {
     float pipeTime = 10.2, pipeSpeed = 5;        
     string nickname, hour;
 
-                //Ler partidas anteriores
-    ifstream entrada;
-    entrada.open("highscores.txt");
 
-    if (entrada) {
-        while (entrada >> pontuacoes.nome) {
-            entrada >> pontuacoes.pontos;
-            entrada.ignore();
-            getline(entrada, pontuacoes.hora);
-            highscores.push_back(pontuacoes);
-        }
-        entrada.close();  
-    }
                                         //Game Loop
     while (window.isOpen())
     {
@@ -220,8 +228,11 @@ int main() {
 
                             //Iniciar menu de gameover
                             else if (gameOver) {
+                                if (salvarpontos < points) {
                                 pontuacoes.pontos = points;
+                                highscores.pop_back();
                                 highscores.push_back(pontuacoes);
+                                }
                                 playerInput.clear();
                                 initialMenu = true;
                                 gameOver = false;
@@ -244,7 +255,7 @@ int main() {
                                     ofstream saida;
                                     saida.open("highscores.txt");
                                     for (auto h : highscores){
-                                        saida << h.nome << " " << h.pontos << " " << h.hora;
+                                        saida << h.nome << " " << h.pontos << " " << h.hora << endl;
                                     }
                                     saida.close();
                                 }
