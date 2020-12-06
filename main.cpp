@@ -41,11 +41,9 @@ int main() {
             sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Flappy Bird");
 
 
-
     //Limite de Frames
     window.setFramerateLimit(60);
     sf::Clock clock;
-
 
 
     //Sprites
@@ -136,12 +134,6 @@ int main() {
             gameoverTexture.loadFromFile("assets/gameover2.png");
             sf::Sprite gameoverSprite(gameoverTexture);
             gameoverSprite.setPosition(windowWidth/4, 130);
-
-            //Leaderboard
-            sf::Texture leaderboardTexture;
-            leaderboardTexture.loadFromFile("assets/leaderboard2.png");
-            sf::Sprite leaderboardSprite(leaderboardTexture);
-            leaderboardSprite.setPosition(windowWidth/4, 300);
 
             //Menu inicial
             sf::Texture menuTexture;
@@ -355,7 +347,6 @@ int main() {
         window.draw(pointstext);
         if (gameOver) {
             window.draw(gameoverSprite);
-            window.draw(leaderboardSprite);
         }
         if (initialMenu) {
             window.draw(mainmenuSprite);
@@ -364,11 +355,6 @@ int main() {
         }
         window.display();
     }
-
-
-        
-
-        
 
     return 0;
 }
