@@ -25,28 +25,8 @@ using namespace std;
 
 
 int main() {
-    
-
-
             //Vetor para salvar os dados da estrutura
             vector <score> highscores;
-
-
-    //Ler partidas anteriores
-    ifstream entrada;
-    entrada.open("highscores.txt");
-
-    if (!entrada){
-        entrada.close();
-        }
-
-    while (entrada >> pontuacoes.nome) {
-        entrada >> pontuacoes.pontos;
-        entrada.ignore();
-        getline(entrada, pontuacoes.hora);
-        highscores.push_back(pontuacoes);
-    }
-    entrada.close();            
 
     //Tamanhos
             //Tamanho do Cano
@@ -149,12 +129,19 @@ int main() {
 
 
 
+
     //Menus
             //Menu de game over
             sf::Texture gameoverTexture;
             gameoverTexture.loadFromFile("assets/gameover2.png");
             sf::Sprite gameoverSprite(gameoverTexture);
             gameoverSprite.setPosition(windowWidth/4, 130);
+
+            //Leaderboard
+            sf::Texture leaderboardTexture;
+            leaderboardTexture.loadFromFile("assets/leaderboard2.png");
+            sf::Sprite leaderboardSprite(leaderboardTexture);
+            leaderboardSprite.setPosition(windowWidth/4, 300);
 
             //Menu inicial
             sf::Texture menuTexture;
@@ -165,15 +152,24 @@ int main() {
 
 
     //Variaveis úteis para o game
-        bool gameRunning = false, initialMenu = true, gameOver = false, jump = false, spriteLimiter = false, pointGotten = false;
-        int y = windowHeight/2, jumpCount = 0, rotation = 0, spriteCount = 0, pipex = windowWidth, pipesheight = windowHeight/2, points = 0;
-        float pipeTime = 10.2, pipeSpeed = 5;        
-        string nickname, hour;
+    bool gameRunning = false, initialMenu = true, gameOver = false, jump = false, spriteLimiter = false, pointGotten = false;
+    int y = windowHeight/2, jumpCount = 0, rotation = 0, spriteCount = 0, pipex = windowWidth, pipesheight = windowHeight/2, points = 0;
+    float pipeTime = 10.2, pipeSpeed = 5;        
+    string nickname, hour;
 
+                //Ler partidas anteriores
+    ifstream entrada;
+    entrada.open("highscores.txt");
 
-
-
-
+    if (entrada) {
+        while (entrada >> pontuacoes.nome) {
+            entrada >> pontuacoes.pontos;
+            entrada.ignore();
+            getline(entrada, pontuacoes.hora);
+            highscores.push_back(pontuacoes);
+        }
+        entrada.close();  
+    }
                                         //Game Loop
     while (window.isOpen())
     {
@@ -249,7 +245,17 @@ int main() {
                                 birdSprite.setPosition(windowWidth/2, windowHeight/2);
                                 birdSprite.setTextureRect(birdRect);
                                 pointstext.setString("");
-                            }
+
+                                //Salvar pontuações num arquivo txt
+                                sort(highscores.begin(), highscores.end(), cmp);
+                                    //Salvar novas pontuaçoes
+                                    ofstream saida;
+                                    saida.open("highscores.txt");
+                                    for (auto h : highscores){
+                                        saida << h.nome << " " << h.pontos << " " << h.hora;
+                                    }
+                                    saida.close();
+                                }
 
                             //Pular com o pássaro
                             else if(jumpCount < 10){
@@ -349,6 +355,7 @@ int main() {
         window.draw(pointstext);
         if (gameOver) {
             window.draw(gameoverSprite);
+            window.draw(leaderboardSprite);
         }
         if (initialMenu) {
             window.draw(mainmenuSprite);
@@ -358,25 +365,6 @@ int main() {
         window.display();
     }
 
-
-
-
-
-        //Salvando pontuações num arquivo txt
-        sort(highscores.begin(), highscores.end(), cmp);
-
-        ofstream saida;
-        saida.open("highscores.txt");
-
-        if (!saida){
-            cout << "Falhou";
-            exit(1);
-        }
-
-        for (auto h : highscores){
-            saida << h.nome << " " << h.pontos << " " << h.hora << endl;
-        }
-        saida.close();
 
         
 
